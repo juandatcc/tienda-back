@@ -8,183 +8,147 @@ import com.tienda.electronicos.repository.CarritoRepository;
 import com.tienda.electronicos.repository.ProductoRepository;
 import com.tienda.electronicos.repository.UsuarioRepository;
 import com.tienda.electronicos.security.SecurityUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Service
 @Transactional
-
-// @RequiredArgsConstructor
 public class CarritoService {
 
-    // =====================================================
-    // DEPENDENCIAS
-    // =====================================================
     private final CarritoRepository carritoRepository;
     private final ProductoRepository productoRepository;
     private final UsuarioRepository usuarioRepository;
     private final SecurityUtils securityUtils;
 
-    // =====================================================
-    // CONSTRUCTOR
-    // =====================================================
     public CarritoService(
             CarritoRepository carritoRepository,
             ProductoRepository productoRepository,
             UsuarioRepository usuarioRepository,
             SecurityUtils securityUtils
-    )
-    // Constructor manual en lugar de @RequiredArgsConstructor
-    {
+    ) {
         this.carritoRepository = carritoRepository;
         this.productoRepository = productoRepository;
         this.usuarioRepository = usuarioRepository;
         this.securityUtils = securityUtils;
     }
 
-    // =====================================================
-    // AGREGAR PRODUCTO AL CARRITO
-    // =====================================================
     public Carrito agregarProducto(Long productoId, int cantidad) {
 
-        // VALIDAR CANTIDAD
         if (cantidad <= 0) {
-            throw new RuntimeException("La cantidad debe ser mayor a cero");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La cantidad debe ser mayor a cero");
         }
 
-        // OBTENER USUARIO
         String correoUsuario = securityUtils.obtenerCorreoDesdeContexto();
+        if (correoUsuario == null || correoUsuario.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no autenticado");
+        }
 
-        // BUSCAR USUARIO Y PRODUCTO
         Usuario usuario = usuarioRepository.findByCorreo(correoUsuario)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
 
-        // BUSCAR PRODUCTO
         Producto producto = productoRepository.findById(productoId)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado"));
 
-        // OBTENER O CREAR CARRITO
         Carrito carrito = carritoRepository.findByUsuario(usuario)
                 .orElseGet(() -> crearCarrito(usuario));
 
-        // VERIFICAR SI EL PRODUCTO YA ESTÁ EN EL CARRITO
+        // Defensive init in case items == null
+        if (carrito.getItems() == null) {
+            carrito.setItems(new ArrayList<>());
+        }
+
         Optional<CarritoItem> itemExistente = carrito.getItems()
-                // Buscar el item correspondiente al productoId
                 .stream()
-                .filter(item ->
-                        item.getProducto().getIdProducto().equals(productoId)
-                )
+                .filter(item -> item.getProducto() != null && item.getProducto().getIdProducto().equals(productoId))
                 .findFirst();
 
-        // ACTUALIZAR CANTIDAD O AGREGAR NUEVO ITEM
         if (itemExistente.isPresent()) {
             CarritoItem item = itemExistente.get();
             item.setCantidad(item.getCantidad() + cantidad);
-            // Actualizar la cantidad sumando la nueva cantidad
         } else {
             CarritoItem nuevoItem = new CarritoItem(carrito, producto, cantidad);
             carrito.getItems().add(nuevoItem);
         }
 
-        // GUARDAR CAMBIOS
         return carritoRepository.save(carrito);
     }
 
-    // =====================================================
-    // ACTUALIZAR CANTIDAD DE PRODUCTO
-    // =====================================================
-
-    // ACTUALIZAR CANTIDAD DE PRODUCTO
     public Carrito actualizarCantidad(Long productoId, int nuevaCantidad) {
 
-        // VALIDAR CANTIDAD
         String correoUsuario = securityUtils.obtenerCorreoDesdeContexto();
+        if (correoUsuario == null || correoUsuario.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no autenticado");
+        }
 
-        // OBTENER USUARIO
         Usuario usuario = usuarioRepository.findByCorreo(correoUsuario)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
 
-        // OBTENER CARRITO
         Carrito carrito = carritoRepository.findByUsuario(usuario)
-                .orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado"));
 
-        // BUSCAR ITEM EN EL CARRITO
+        if (carrito.getItems() == null || carrito.getItems().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El carrito no contiene items");
+        }
+
         CarritoItem item = carrito.getItems()
-
-                // Buscar el item correspondiente al productoId
                 .stream()
-                .filter(i -> i.getProducto().getIdProducto().equals(productoId))
+                .filter(i -> i.getProducto() != null && i.getProducto().getIdProducto().equals(productoId))
                 .findFirst()
-                .orElseThrow(() ->
-                        new RuntimeException("Producto no existe en el carrito")
-                );
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no existe en el carrito"));
 
-        // ACTUALIZAR O ELIMINAR ITEM SEGÚN LA NUEVA CANTIDAD
         if (nuevaCantidad <= 0) {
             carrito.getItems().remove(item);
         } else {
             item.setCantidad(nuevaCantidad);
         }
 
-        // GUARDAR CAMBIOS
         return carritoRepository.save(carrito);
     }
 
-    // =====================================================
-    // ELIMINAR PRODUCTO DEL CARRITO
-    // =====================================================
     public Carrito eliminarProducto(Long productoId) {
 
-        // OBTENER USUARIO
         String correoUsuario = securityUtils.obtenerCorreoDesdeContexto();
+        if (correoUsuario == null || correoUsuario.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no autenticado");
+        }
 
-        // BUSCAR USUARIO Y CARRITO
         Usuario usuario = usuarioRepository.findByCorreo(correoUsuario)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
 
-        // OBTENER CARRITO
         Carrito carrito = carritoRepository.findByUsuario(usuario)
-                .orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado"));
 
-        // ELIMINAR ITEM DEL CARRITO
-        carrito.getItems().removeIf(item ->
-                item.getProducto().getIdProducto().equals(productoId)
-        );
+        if (carrito.getItems() != null) {
+            carrito.getItems().removeIf(item -> item.getProducto() != null && item.getProducto().getIdProducto().equals(productoId));
+        }
 
-        // GUARDAR CAMBIOS
         return carritoRepository.save(carrito);
     }
 
-    // =====================================================
-    // OBTENER CARRITO DEL USUARIO
-    // =====================================================
     public Carrito obtenerCarrito() {
 
-        // OBTENER USUARIO
         String correoUsuario = securityUtils.obtenerCorreoDesdeContexto();
+        if (correoUsuario == null || correoUsuario.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no autenticado");
+        }
 
-        // BUSCAR USUARIO Y CARRITO
         Usuario usuario = usuarioRepository.findByCorreo(correoUsuario)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
 
-        // OBTENER CARRITO
         return carritoRepository.findByUsuario(usuario)
-                .orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado"));
     }
 
-    // =====================================================
-    // MÉTODO PRIVADO
-    // =====================================================
-    private Carrito crearCarrito(Usuario usuario)
-
-    // CREAR NUEVO CARRITO
-    {
-        // NUEVO CARRITO
+    private Carrito crearCarrito(Usuario usuario) {
         Carrito carrito = new Carrito();
         carrito.setUsuario(usuario);
-        // GUARDAR CARRITO
+        // Inicializar lista de items para evitar NullPointer al añadir items
+        carrito.setItems(new ArrayList<>());
         return carritoRepository.save(carrito);
     }
 }
