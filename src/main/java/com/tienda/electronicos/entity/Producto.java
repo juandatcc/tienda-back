@@ -1,4 +1,3 @@
-
 package com.tienda.electronicos.entity;
 
 import jakarta.persistence.*;
@@ -30,5 +29,7 @@ public class Producto {
     @ManyToOne
     @JoinColumn(name = "id_categoria")
     private CategoriaProducto categoria;
-}
 
+    @Column(name = "imagen_url", length = 500)
+    private String imagenUrl;
+}

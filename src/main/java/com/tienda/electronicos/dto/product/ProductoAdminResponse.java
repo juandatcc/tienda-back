@@ -10,8 +10,8 @@ public record ProductoAdminResponse(
         BigDecimal precio,
         Integer stock,
         Long categoriaId,
-        String categoriaNombre
-
+        String categoriaNombre,
+        String imagenUrl
 )
 
     // Getters adicionales si es necesario
@@ -43,4 +43,6 @@ public record ProductoAdminResponse(
     public Long getIdCategoria() {
         return categoriaId;
     }
+
+    public String getImagenUrl() { return imagenUrl; }
 }
