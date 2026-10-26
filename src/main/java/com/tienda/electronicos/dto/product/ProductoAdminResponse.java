@@ -4,19 +4,19 @@ import java.math.BigDecimal;
 
 // DTO para la respuesta de administración de productos
 public record ProductoAdminResponse(
-        Long id,
+        String id,
         String nombre,
         String descripcion,
         BigDecimal precio,
         Integer stock,
-        Long categoriaId,
+        String categoriaId,
         String categoriaNombre,
         String imagenUrl
 )
 
     // Getters adicionales si es necesario
 {
-    public Long getIdProducto() {
+    public String getIdProducto() {
         return id;
     }
 
@@ -40,7 +40,7 @@ public record ProductoAdminResponse(
         return null;
     }
 
-    public Long getIdCategoria() {
+    public String getIdCategoria() {
         return categoriaId;
     }
 

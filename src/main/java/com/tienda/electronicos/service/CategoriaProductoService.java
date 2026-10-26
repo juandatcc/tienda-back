@@ -30,7 +30,7 @@ public class CategoriaProductoService {
 
     // ===== OBTENER POR ID =====
     @Transactional(readOnly = true)
-    public CategoriaAdminResponse obtenerPorId(Long id) {
+    public CategoriaAdminResponse obtenerPorId(String id) {
         CategoriaProducto categoria = categoriaRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Categoría no existe"
@@ -60,7 +60,7 @@ public class CategoriaProductoService {
     }
 
     // ===== ACTUALIZAR =====
-    public CategoriaAdminResponse actualizarCategoria(Long id, CategoriaRequest request) {
+    public CategoriaAdminResponse actualizarCategoria(String id, CategoriaRequest request) {
 
         // Buscar la categoría existente
         CategoriaProducto categoria = categoriaRepository.findById(id)
@@ -89,7 +89,7 @@ public class CategoriaProductoService {
     }
 
     // ===== ELIMINAR =====
-    public void eliminarCategoria(Long id) {
+    public void eliminarCategoria(String id) {
         // Verificar si la categoría existe
         if (!categoriaRepository.existsById(id)) {
             throw new ResponseStatusException(

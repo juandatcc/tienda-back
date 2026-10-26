@@ -16,8 +16,8 @@ import java.time.OffsetDateTime;
 public class PaymentTransaction {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
     @Column(name = "reference", unique = true, length = 100)
     private String reference;

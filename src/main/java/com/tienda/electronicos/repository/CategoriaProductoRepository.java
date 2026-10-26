@@ -5,7 +5,7 @@ import com.tienda.electronicos.entity.CategoriaProducto;
 import org.springframework.data.repository.CrudRepository;
 
 public interface CategoriaProductoRepository
-        extends CrudRepository<CategoriaProducto, Long> {
+        extends CrudRepository<CategoriaProducto, String> {
 
     boolean existsByNombre(String nombre);
 }

@@ -2,15 +2,16 @@ package com.tienda.electronicos.controller.asset;
 
 import com.tienda.electronicos.entity.Asset;
 import com.tienda.electronicos.repository.AssetRepository;
-import com.tienda.electronicos.service.DashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/assets")
@@ -24,9 +25,9 @@ public class AssetController {
     // Endpoint para obtener un Asset por su ID
     @GetMapping("/{id}")
     // Devuelve el archivo con el tipo de contenido adecuado
-    public ResponseEntity<byte[]> getAsset(@PathVariable Long id) {
+    public ResponseEntity<byte[]> getAsset(@PathVariable("id") String id) {
         Asset asset = assetRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Archivo no encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Archivo no encontrado"));
         // Construye la respuesta HTTP con los encabezados adecuados
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + asset.getFilename() + "\"")

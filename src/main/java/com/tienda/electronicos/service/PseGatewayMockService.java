@@ -2,7 +2,6 @@ package com.tienda.electronicos.service;
 
 import com.tienda.electronicos.dto.payment.CreatePaymentRequest;
 import com.tienda.electronicos.dto.payment.CreatePaymentResponse;
-import com.tienda.electronicos.repository.PseGatewayService;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;

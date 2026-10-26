@@ -4,7 +4,6 @@ import com.tienda.electronicos.dto.payment.CreatePaymentRequest;
 import com.tienda.electronicos.dto.payment.CreatePaymentResponse;
 import com.tienda.electronicos.entity.PaymentTransaction;
 import com.tienda.electronicos.repository.PaymentTransactionRepository;
-import com.tienda.electronicos.repository.PseGatewayService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

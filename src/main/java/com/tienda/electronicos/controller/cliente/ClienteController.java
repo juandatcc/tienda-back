@@ -1,9 +1,12 @@
 package com.tienda.electronicos.controller.cliente;
 
-import com.tienda.electronicos.entity.Cliente;
+import com.tienda.electronicos.dto.cliente.ClienteRequest;
+import com.tienda.electronicos.dto.cliente.ClienteResponse;
 import com.tienda.electronicos.service.ClienteService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/clientes")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
 public class ClienteController {
 
     private final ClienteService clienteService;
@@ -19,7 +23,7 @@ public class ClienteController {
     // LISTAR TODOS LOS CLIENTES
     // ===============================
     @GetMapping
-    public ResponseEntity<List<Cliente>> listarClientes() {
+    public ResponseEntity<List<ClienteResponse>> listarClientes() {
         return ResponseEntity.ok(clienteService.listarClientes());
     }
 
@@ -27,7 +31,7 @@ public class ClienteController {
     // OBTENER CLIENTE POR ID
     // ===============================
     @GetMapping("/{id}")
-    public ResponseEntity<Cliente> obtenerClientePorId(@PathVariable Long id) {
+    public ResponseEntity<ClienteResponse> obtenerClientePorId(@PathVariable("id") String id) {
         return ResponseEntity.ok(clienteService.obtenerClientePorId(id));
     }
 
@@ -35,26 +39,26 @@ public class ClienteController {
     // CREAR CLIENTE
     // ===============================
     @PostMapping
-    public ResponseEntity<Cliente> crearCliente(@RequestBody Cliente cliente) {
-        return ResponseEntity.ok(clienteService.crearCliente(cliente));
+    public ResponseEntity<ClienteResponse> crearCliente(@RequestBody @Valid ClienteRequest request) {
+        return ResponseEntity.ok(clienteService.crearCliente(request));
     }
 
     // ===============================
     // ACTUALIZAR CLIENTE
     // ===============================
     @PutMapping("/{id}")
-    public ResponseEntity<Cliente> actualizarCliente(
-            @PathVariable Long id,
-            @RequestBody Cliente cliente
+    public ResponseEntity<ClienteResponse> actualizarCliente(
+            @PathVariable("id") String id,
+            @RequestBody @Valid ClienteRequest request
     ) {
-        return ResponseEntity.ok(clienteService.actualizarCliente(id, cliente));
+        return ResponseEntity.ok(clienteService.actualizarCliente(id, request));
     }
 
     // ===============================
     // ELIMINAR CLIENTE
     // ===============================
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarCliente(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminarCliente(@PathVariable("id") String id) {
         clienteService.eliminarCliente(id);
         return ResponseEntity.noContent().build();
     }

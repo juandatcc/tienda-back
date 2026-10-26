@@ -1,8 +1,10 @@
 package com.tienda.electronicos.security;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 @Component
 public class SecurityUtils {
@@ -12,7 +14,7 @@ public class SecurityUtils {
 
         // Verificar si el usuario está autenticado
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
-            throw new RuntimeException("Usuario no autenticado");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no autenticado");
         }
 
         // Obtener el principal del contexto de seguridad
@@ -27,6 +29,6 @@ public class SecurityUtils {
         }
 
         // Si el principal no es válido, lanzar una excepción
-        throw new RuntimeException("Principal no válido");
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Principal no válido");
     }
 }

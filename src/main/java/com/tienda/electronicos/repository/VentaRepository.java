@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface VentaRepository extends JpaRepository<Venta, Long> {
+public interface VentaRepository extends JpaRepository<Venta, String> {
     List<Venta> findByUsuario(Usuario usuario);
 
     @Query("SELECT COALESCE(SUM(v.total),0) FROM Venta v")

@@ -1,19 +1,28 @@
 package com.tienda.electronicos.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
 
     // ===============================
@@ -93,6 +102,63 @@ public class GlobalExceptionHandler {
     }
 
     // ===============================
+    // Recurso no encontrado (404)
+    // ===============================
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ApiError> handleNoResource(
+            NoResourceFoundException ex,
+            HttpServletRequest request
+    ) {
+        return construir(HttpStatus.NOT_FOUND, "Recurso no encontrado", request);
+    }
+
+    // ===============================
+    // Método HTTP no permitido (405)
+    // ===============================
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ApiError> handleMethodNotSupported(
+            HttpRequestMethodNotSupportedException ex,
+            HttpServletRequest request
+    ) {
+        return construir(HttpStatus.METHOD_NOT_ALLOWED, "Método HTTP no permitido", request);
+    }
+
+    // ===============================
+    // Peticiones mal formadas (400)
+    // ===============================
+    @ExceptionHandler({
+            HttpMessageNotReadableException.class,
+            MethodArgumentTypeMismatchException.class,
+            MissingServletRequestParameterException.class
+    })
+    public ResponseEntity<ApiError> handleBadRequest(
+            Exception ex,
+            HttpServletRequest request
+    ) {
+        return construir(HttpStatus.BAD_REQUEST, "Petición inválida: revisa el cuerpo o los parámetros enviados", request);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiError> handleIllegalArgument(
+            IllegalArgumentException ex,
+            HttpServletRequest request
+    ) {
+        return construir(HttpStatus.BAD_REQUEST, ex.getMessage(), request);
+    }
+
+    // ===============================
+    // Violación de integridad en BD (409)
+    // ===============================
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiError> handleDataIntegrity(
+            DataIntegrityViolationException ex,
+            HttpServletRequest request
+    ) {
+        log.warn("Violación de integridad de datos en {}: {}", request.getRequestURI(), ex.getMostSpecificCause().getMessage());
+        return construir(HttpStatus.CONFLICT, "La operación viola una restricción de datos (duplicado o referencia en uso)", request);
+    }
+
+    // ===============================
     // Errores generales (500)
     // ===============================
     @ExceptionHandler(Exception.class)
@@ -100,14 +166,19 @@ public class GlobalExceptionHandler {
             Exception ex,
             HttpServletRequest request
     ) {
+        log.error("Error no controlado en {} {}", request.getMethod(), request.getRequestURI(), ex);
+        return construir(HttpStatus.INTERNAL_SERVER_ERROR, "Error interno del servidor", request);
+    }
+
+    // Construye la respuesta ApiError estándar
+    private ResponseEntity<ApiError> construir(HttpStatus status, String mensaje, HttpServletRequest request) {
         ApiError error = ApiError.builder()
-                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .error(HttpStatus.INTERNAL_SERVER_ERROR.name())
-                .message("Error interno del servidor")
+                .status(status.value())
+                .error(status.name())
+                .message(mensaje)
                 .path(request.getRequestURI())
                 .timestamp(LocalDateTime.now())
                 .build();
-
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        return ResponseEntity.status(status).body(error);
     }
 }

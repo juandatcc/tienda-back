@@ -29,7 +29,7 @@ public class ProductoController {
 
     // ===== OBTENER POR ID (PÚBLICO) =====
     @GetMapping("/{id}")
-    public ProductoAdminResponse obtenerPorId(@PathVariable Long id) {
+    public ProductoAdminResponse obtenerPorId(@PathVariable("id") String id) {
         return productoService.obtenerPorId(id);
     }
 
@@ -57,7 +57,7 @@ public class ProductoController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ProductoAdminResponse actualizarProducto(
-            @PathVariable("id") Long id,
+            @PathVariable("id") String id,
             @RequestBody @Valid ProductoRequest request
     ) {
         return productoService.actualizarProducto(id, request);
@@ -67,7 +67,7 @@ public class ProductoController {
     @PostMapping("/{id}/imagen")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductoAdminResponse> subirImagenProducto(
-            @PathVariable("id") Long id,
+            @PathVariable("id") String id,
             @RequestParam("file") MultipartFile file
     ) {
         ProductoAdminResponse updated = productoService.uploadImagen(id, file);
@@ -77,7 +77,7 @@ public class ProductoController {
     // ===== ELIMINAR (ADMIN) =====
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> eliminarProducto(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> eliminarProducto(@PathVariable("id") String id) {
         productoService.eliminarProducto(id);
         return ResponseEntity.noContent().build();
     }

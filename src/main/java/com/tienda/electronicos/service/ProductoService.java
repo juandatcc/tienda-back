@@ -56,7 +56,7 @@ public class ProductoService {
     // OBTENER POR ID
     // =========================
     @Transactional(readOnly = true)
-    public ProductoAdminResponse obtenerPorId(Long id) {
+    public ProductoAdminResponse obtenerPorId(String id) {
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no existe")
@@ -126,7 +126,7 @@ public class ProductoService {
     // =========================
     // ACTUALIZAR (ADMIN)
     // =========================
-    public ProductoAdminResponse actualizarProducto(Long id, ProductoRequest request) {
+    public ProductoAdminResponse actualizarProducto(String id, ProductoRequest request) {
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no existe")
@@ -151,7 +151,7 @@ public class ProductoService {
     // =========================
     // SUBIR IMAGEN (ADMIN) - guardar en disco y en tabla ASSET
     // =========================
-    public ProductoAdminResponse uploadImagen(Long id, MultipartFile file) {
+    public ProductoAdminResponse uploadImagen(String id, MultipartFile file) {
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no existe"));
 
@@ -196,7 +196,7 @@ public class ProductoService {
     // =========================
     // ELIMINAR (ADMIN)
     // =========================
-    public void eliminarProducto(Long id) {
+    public void eliminarProducto(String id) {
         if (!productoRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no existe");
         }
@@ -207,7 +207,7 @@ public class ProductoService {
     // MAPPER PRIVADO
     // =========================
     private ProductoAdminResponse toResponse(Producto p) {
-        Long categoriaId = p.getCategoria() != null ? p.getCategoria().getIdCategoria() : null;
+        String categoriaId = p.getCategoria() != null ? p.getCategoria().getIdCategoria() : null;
         String categoriaNombre = p.getCategoria() != null ? p.getCategoria().getNombre() : "Sin categoría";
         return new ProductoAdminResponse(
                 p.getIdProducto(),

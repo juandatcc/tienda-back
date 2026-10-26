@@ -15,13 +15,14 @@ import java.math.BigDecimal;
 public class Producto {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idProducto;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String idProducto;
 
     private String nombre;
 
     private String descripcion;
 
+    @Column(name = "PRECIO", columnDefinition = "FLOAT(126)")
     private BigDecimal precio;
 
     private Integer stock;

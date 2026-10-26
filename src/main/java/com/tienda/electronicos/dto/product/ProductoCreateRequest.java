@@ -30,7 +30,7 @@ public class ProductoCreateRequest {
 
     // ID de la categoría a la que pertenece el producto
     @NotNull(message = "La categoría es obligatoria")
-    private Long categoriaId;
+    private String categoriaId;
 
     // Imagen del producto (opcional)
     private MultipartFile imagen;

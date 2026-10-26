@@ -6,6 +6,7 @@ import com.tienda.electronicos.dto.auth.RegisterRequest;
 import com.tienda.electronicos.security.TokenBlacklistService;
 import com.tienda.electronicos.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -22,7 +23,7 @@ public class AuthController {
     // ===== REGISTRO =====
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(
-            @RequestBody RegisterRequest request
+            @RequestBody @Valid RegisterRequest request
     ) {
         AuthResponse response = authService.register(request);
         return ResponseEntity.ok(response);
@@ -31,7 +32,7 @@ public class AuthController {
     // ===== LOGIN =====
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(
-            @RequestBody LoginRequest request
+            @RequestBody @Valid LoginRequest request
     ) {
         AuthResponse response = authService.login(request);
         return ResponseEntity.ok(response);

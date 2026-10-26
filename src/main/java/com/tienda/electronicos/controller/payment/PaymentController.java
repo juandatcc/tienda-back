@@ -23,7 +23,7 @@ public class PaymentController {
     }
 
     @GetMapping("/status/{reference}")
-    public ResponseEntity<PaymentTransaction> getStatus(@PathVariable String reference) {
+    public ResponseEntity<PaymentTransaction> getStatus(@PathVariable("reference") String reference) {
         PaymentTransaction tx = paymentService.findByReference(reference);
         if (tx == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(tx);
@@ -32,9 +32,9 @@ public class PaymentController {
     // Endpoint público que simula el flujo de checkout de la pasarela PSE (mock)
     @GetMapping("/pse/mock/checkout")
     public ResponseEntity<String> mockCheckout(
-            @RequestParam String reference,
-            @RequestParam String amount,
-            @RequestParam String returnUrl
+            @RequestParam("reference") String reference,
+            @RequestParam("amount") String amount,
+            @RequestParam("returnUrl") String returnUrl
     ) {
         // Simular que el banco procesa y redirige al returnUrl con status
         // Para simplificar, generamos un pseTransactionId y consideramos pago aprobado

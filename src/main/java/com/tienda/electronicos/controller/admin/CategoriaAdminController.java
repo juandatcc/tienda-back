@@ -31,7 +31,7 @@ public class CategoriaAdminController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public CategoriaAdminResponse actualizarCategoria(
-            @PathVariable("id") Long id,
+            @PathVariable("id") String id,
             @RequestBody @Valid CategoriaRequest request
     ) {
         return categoriaService.actualizarCategoria(id, request);
@@ -40,7 +40,7 @@ public class CategoriaAdminController {
 
     // ===== ELIMINAR =====
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarCategoria(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> eliminarCategoria(@PathVariable("id") String id) {
         categoriaService.eliminarCategoria(id);
         return ResponseEntity.noContent().build();
     }

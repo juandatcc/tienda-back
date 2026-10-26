@@ -20,7 +20,7 @@ public class CategoriaController {
     }
 
     @GetMapping("/{id}")
-    public CategoriaAdminResponse obtenerPorId(@PathVariable Long id) {
+    public CategoriaAdminResponse obtenerPorId(@PathVariable("id") String id) {
         return categoriaService.obtenerPorId(id);
     }
 }

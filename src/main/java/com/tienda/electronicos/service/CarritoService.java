@@ -37,7 +37,7 @@ public class CarritoService {
         this.securityUtils = securityUtils;
     }
 
-    public Carrito agregarProducto(Long productoId, int cantidad) {
+    public Carrito agregarProducto(String productoId, int cantidad) {
 
         if (cantidad <= 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La cantidad debe ser mayor a cero");
@@ -75,10 +75,10 @@ public class CarritoService {
             carrito.getItems().add(nuevoItem);
         }
 
-        return carritoRepository.save(carrito);
+        return carritoRepository.saveAndFlush(carrito);
     }
 
-    public Carrito actualizarCantidad(Long productoId, int nuevaCantidad) {
+    public Carrito actualizarCantidad(String productoId, int nuevaCantidad) {
 
         String correoUsuario = securityUtils.obtenerCorreoDesdeContexto();
         if (correoUsuario == null || correoUsuario.isBlank()) {
@@ -107,10 +107,10 @@ public class CarritoService {
             item.setCantidad(nuevaCantidad);
         }
 
-        return carritoRepository.save(carrito);
+        return carritoRepository.saveAndFlush(carrito);
     }
 
-    public Carrito eliminarProducto(Long productoId) {
+    public Carrito eliminarProducto(String productoId) {
 
         String correoUsuario = securityUtils.obtenerCorreoDesdeContexto();
         if (correoUsuario == null || correoUsuario.isBlank()) {
@@ -127,7 +127,7 @@ public class CarritoService {
             carrito.getItems().removeIf(item -> item.getProducto() != null && item.getProducto().getIdProducto().equals(productoId));
         }
 
-        return carritoRepository.save(carrito);
+        return carritoRepository.saveAndFlush(carrito);
     }
 
     public Carrito obtenerCarrito() {
@@ -140,8 +140,14 @@ public class CarritoService {
         Usuario usuario = usuarioRepository.findByCorreo(correoUsuario)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
 
+        // Si el usuario aún no tiene carrito se devuelve uno vacío (sin persistir)
         return carritoRepository.findByUsuario(usuario)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado"));
+                .orElseGet(() -> {
+                    Carrito vacio = new Carrito();
+                    vacio.setUsuario(usuario);
+                    vacio.setItems(new ArrayList<>());
+                    return vacio;
+                });
     }
 
     private Carrito crearCarrito(Usuario usuario) {
@@ -149,6 +155,6 @@ public class CarritoService {
         carrito.setUsuario(usuario);
         // Inicializar lista de items para evitar NullPointer al añadir items
         carrito.setItems(new ArrayList<>());
-        return carritoRepository.save(carrito);
+        return carritoRepository.saveAndFlush(carrito);
     }
 }

@@ -1,6 +1,6 @@
 package com.tienda.electronicos.controller.auth;
 
-import com.tienda.electronicos.dto.admin.UsuarioAdminResponse;
+import com.tienda.electronicos.dto.usuario.UsuarioResponse;
 import com.tienda.electronicos.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,7 +28,7 @@ public class AdminController {
     // LISTAR USUARIOS
     // =========================
     @GetMapping("/usuarios")
-    public List<UsuarioAdminResponse> listarUsuarios() {
+    public List<UsuarioResponse> listarUsuarios() {
         return usuarioService.listarUsuarios();
     }
 
