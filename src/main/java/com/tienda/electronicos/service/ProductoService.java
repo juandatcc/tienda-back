@@ -27,7 +27,7 @@ public class ProductoService {
 
     private final ProductoRepository productoRepository;
     private final CategoriaProductoRepository categoriaRepository;
-    private final SupabaseStorageService storageService;
+    private final ImagenService imagenService;
 
     // =========================
     // LISTAR (ADMIN / USER)
@@ -93,7 +93,7 @@ public class ProductoService {
 
         // Subir imagen a Supabase si viene; si falla, la transacción revierte el producto
         if (request.getImagen() != null && !request.getImagen().isEmpty()) {
-            producto.setImagenUrl(storageService.subirImagenProducto(producto.getIdProducto(), request.getImagen()));
+            producto.setImagenUrl(imagenService.subirImagenProducto(request.getImagen()));
             producto = productoRepository.save(producto);
         }
         return toResponse(producto);
@@ -131,7 +131,7 @@ public class ProductoService {
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no existe"));
 
-        String imagenUrl = storageService.subirImagenProducto(producto.getIdProducto(), file);
+        String imagenUrl = imagenService.subirImagenProducto(file);
         producto.setImagenUrl(imagenUrl);
         productoRepository.save(producto);
         log.info("Producto {} actualizado con imagenUrl={}", producto.getIdProducto(), imagenUrl);
