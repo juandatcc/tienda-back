@@ -14,6 +14,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
@@ -144,6 +145,17 @@ public class GlobalExceptionHandler {
             HttpServletRequest request
     ) {
         return construir(HttpStatus.BAD_REQUEST, ex.getMessage(), request);
+    }
+
+    // ===============================
+    // Archivo subido demasiado grande (400)
+    // ===============================
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiError> handleMaxUploadSize(
+            MaxUploadSizeExceededException ex,
+            HttpServletRequest request
+    ) {
+        return construir(HttpStatus.BAD_REQUEST, "La imagen supera el máximo de 5 MB", request);
     }
 
     // ===============================
