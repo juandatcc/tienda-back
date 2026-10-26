@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "clientes")
+@Table(name = "CLIENTE")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -13,17 +13,17 @@ import lombok.*;
 public class Cliente {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "ID_CLIENTE")
+    private String id;
 
-    @Column(nullable = false)
+    @Column(name = "NOMBRE", nullable = false)
     private String nombre;
 
-    @Column(nullable = false, unique = true)
-    private String correo;
-
+    @Column(name = "TELEFONO")
     private String telefono;
 
+    @Column(name = "DIRECCION")
     private String direccion;
 
     /**
@@ -32,45 +32,9 @@ public class Cliente {
      */
     @OneToOne(optional = false)
     @JoinColumn(
-            name = "usuario_id",
+            name = "ID_USUARIO",
             nullable = false,
             unique = true
     )
     private Usuario usuario;
-
-    // getters y setters
-
-
-
-    public void setNombre() {
-    }
-
-    public void setDireccion() {
-    }
-
-    public void setUsuario() {
-    }
-
-    public void setTelefono() {
-    }
-
-    public String getNombre() {
-        return null;
-    }
-
-    public String getCorreo() {
-        return null;
-    }
-
-    public String getTelefono() {
-        return null;
-    }
-
-    public String getDireccion() {
-        return null;
-    }
-
-    public void setCorreo() {
-
-    }
 }

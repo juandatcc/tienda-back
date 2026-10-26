@@ -1,19 +1,15 @@
 package com.tienda.electronicos.dto.carrito;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 import java.math.BigDecimal;
 
-@Getter
-@AllArgsConstructor
-public class CarritoItemResponse {
-
-    private Long productoId;
-    private String nombreProducto;
-    private String descripcionProducto;
-    private int cantidad;
-    private BigDecimal precio;
-
-
-}
+// Item del carrito tal como lo consume el frontend
+public record CarritoItemResponse(
+        String idItem,
+        String idProducto,
+        String nombreProducto,
+        String descripcionProducto,
+        int cantidad,
+        BigDecimal precioUnitario,
+        BigDecimal subtotal,
+        String imagenUrl
+) {}

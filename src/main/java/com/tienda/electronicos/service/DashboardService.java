@@ -33,9 +33,9 @@ public class DashboardService {
         if (!topProductos.isEmpty()) {
             Object[] row = topProductos.getFirst();
             productoMasVendido = DashboardResponse.ProductoResumen.builder()
-                    .id((Long) row[0])
+                    .id((String) row[0])
                     .nombre((String) row[1])
-                    .cantidadVendida((Long) row[2])
+                    .cantidadVendida(((Number) row[2]).longValue())
                     .build();
         }
 

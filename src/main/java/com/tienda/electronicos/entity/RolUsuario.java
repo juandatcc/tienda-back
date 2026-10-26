@@ -10,12 +10,11 @@ import lombok.*;
 public class RolUsuario {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_rol")
-    @SequenceGenerator(name = "seq_rol", sequenceName = "SEQ_ROL_USUARIO", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "ID_ROL")
-    private Long idRol;
+    private String idRol;
 
-    /** Nombre del rol en mayúsculas: ADMIN, USER, ... */
+    /** Nombre del rol en mayúsculas: ROLE_ADMIN, ROLE_USER, ... */
     @Column(name = "NOMBRE", nullable = false, unique = true)
     private String nombre;
 }

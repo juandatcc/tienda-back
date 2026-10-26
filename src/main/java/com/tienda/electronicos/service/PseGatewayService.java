@@ -1,4 +1,4 @@
-package com.tienda.electronicos.repository;
+package com.tienda.electronicos.service;
 
 import com.tienda.electronicos.dto.payment.CreatePaymentRequest;
 import com.tienda.electronicos.dto.payment.CreatePaymentResponse;

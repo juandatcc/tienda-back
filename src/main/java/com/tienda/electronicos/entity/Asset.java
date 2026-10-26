@@ -15,13 +15,13 @@ import java.time.OffsetDateTime;
 public class Asset {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
     @Column(name = "FILENAME", length = 255, nullable = false)
     private String filename;
 
-    @Column(name = "PATH", length = 4000)
+    @Column(name = "FILE_PATH", length = 4000)
     private String path;
 
     @Lob
@@ -31,7 +31,7 @@ public class Asset {
     @Column(name = "CONTENT_TYPE", length = 255)
     private String contentType;
 
-    @Column(name = "SIZE")
+    @Column(name = "FILE_SIZE")
     private Long size;
 
     @Column(name = "CREATED_AT")

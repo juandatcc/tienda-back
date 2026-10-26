@@ -19,9 +19,9 @@ import java.math.BigDecimal;
 public class CarritoItem {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id_item")
-    private Long idItem;
+    private String idItem;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_carrito", nullable = false)
@@ -34,7 +34,7 @@ public class CarritoItem {
     @Column(nullable = false)
     private Integer cantidad;
 
-    // 🔥 ESTE CONSTRUCTOR ES EL QUE FALTABA
+    // Constructor de conveniencia para crear items nuevos
     public CarritoItem(Carrito carrito, Producto producto, Integer cantidad) {
         this.carrito = carrito;
         this.producto = producto;

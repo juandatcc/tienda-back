@@ -20,7 +20,7 @@ public class DashboardResponse {
     @Data
     @Builder
     public static class ProductoResumen {
-        private Long id;
+        private String id;
         private String nombre;
         private long cantidadVendida;
     }

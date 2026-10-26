@@ -18,9 +18,9 @@ import java.util.List;
 public class Carrito {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id_carrito")
-    private Long idCarrito;
+    private String idCarrito;
 
     @OneToOne
     @JoinColumn(name = "id_usuario", nullable = false, unique = true)

@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -17,13 +18,18 @@ import java.util.List;
 public class Venta {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "ID_VENTA")
-    private Long idVenta;
+    private String idVenta;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_USUARIO", nullable = false)
     private Usuario usuario;
+
+    // Cliente asociado a la venta (obligatorio en BD)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ID_CLIENTE", nullable = false)
+    private Cliente cliente;
 
     @Column(name = "FECHA", nullable = false)
     private LocalDateTime fecha;
@@ -36,8 +42,6 @@ public class Venta {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<DetalleVenta> detalles;
-
-    public void setDetalle(List<DetalleVenta> detalles) {
-    }
+    @Builder.Default
+    private List<DetalleVenta> detalles = new ArrayList<>();
 }

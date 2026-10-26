@@ -9,6 +9,7 @@ import com.tienda.electronicos.repository.RolUsuarioRepository;
 import com.tienda.electronicos.repository.UsuarioRepository;
 import com.tienda.electronicos.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,10 @@ public class AuthService {
     private final RolUsuarioRepository rolRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+
+    // Código secreto para registrar administradores (security.admin.register-code)
+    @Value("${security.admin.register-code}")
+    private String adminRegisterCode;
 
     // =========================
     // LOGIN
@@ -65,7 +70,9 @@ public class AuthService {
         return new AuthResponse(
                 token,
                 usuario.getCorreo(),
-                usuario.getRol().getNombre()
+                usuario.getRol().getNombre(),
+                usuario.getIdUsuario(),
+                usuario.getNombre()
         );
     }
 
@@ -84,15 +91,14 @@ public class AuthService {
         }
 
         // 2️⃣ Determinar rol
-        String nombreRol = "ROLE_USER";
-        if ("ADMIN-2025".equals(request.getCodigoAdmin())) {
-            nombreRol = "ADMIN";
-        }
+        boolean esAdmin = adminRegisterCode != null && !adminRegisterCode.isBlank()
+                && adminRegisterCode.equals(request.getCodigoAdmin());
+        final String nombreRol = esAdmin ? "ROLE_ADMIN" : "ROLE_USER";
 
         // 3️⃣ Buscar rol
         RolUsuario rol = rolRepository.findByNombre(nombreRol)
                 .orElseThrow(() ->
-                        new IllegalStateException("Rol no encontrado")
+                        new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Rol no encontrado: " + nombreRol)
                 );
 
         // 4️⃣ Crear usuario
@@ -105,7 +111,7 @@ public class AuthService {
                 .rol(rol)
                 .build();
 
-        usuarioRepository.save(usuario);
+        usuario = usuarioRepository.save(usuario);
 
         // 5️⃣ Token
         String token = jwtUtil.generarToken(
@@ -117,7 +123,9 @@ public class AuthService {
         return new AuthResponse(
                 token,
                 usuario.getCorreo(),
-                rol.getNombre()
+                rol.getNombre(),
+                usuario.getIdUsuario(),
+                usuario.getNombre()
         );
     }
 }

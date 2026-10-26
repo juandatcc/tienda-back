@@ -26,7 +26,7 @@ public class ProductoRequest {
     private Integer stock;
 
     @NotNull(message = "La categoría es obligatoria")
-    private Long categoriaId;
+    private String categoriaId;
 
     @Size(max = 500, message = "La URL de la imagen no debe superar 500 caracteres")
     private String imagenUrl;

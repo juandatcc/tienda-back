@@ -6,7 +6,7 @@ import lombok.*;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "VENTA_DETALLE")
+@Table(name = "DETALLE_VENTA")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,9 +15,9 @@ import java.math.BigDecimal;
 public class DetalleVenta {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "ID_DETALLE")
-    private Long idDetalle;
+    private String idDetalle;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_VENTA", nullable = false)

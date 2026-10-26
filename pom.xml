@@ -17,6 +17,8 @@
     <properties>
         <java.version>21</java.version>
         <spring.boot.version>3.4.12</spring.boot.version>
+        <!-- Debe coincidir con la versión de Lombok gestionada por el BOM de Spring Boot -->
+        <lombok.version>1.18.42</lombok.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
@@ -77,13 +79,6 @@
             <version>23.6.0.24.10</version>
         </dependency>
 
-        <!-- ModelMapper -->
-        <dependency>
-            <groupId>org.modelmapper</groupId>
-            <artifactId>modelmapper</artifactId>
-            <version>3.2.0</version>
-        </dependency>
-
         <!-- Jackson (si lo usas directamente) -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -108,41 +103,19 @@
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
-            <version>0.11.5</version>
+            <version>0.12.6</version>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-impl</artifactId>
-            <version>0.11.5</version>
+            <version>0.12.6</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-jackson</artifactId>
-            <version>0.11.5</version>
+            <version>0.12.6</version>
             <scope>runtime</scope>
-        </dependency>
-
-        <!-- MapStruct (API) -->
-        <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct</artifactId>
-            <version>1.5.5.Final</version>
-        </dependency>
-
-        <!-- Lombok en 'compileOnly' + 'annotationProcessor' es la práctica habitual -->
-        <!-- (Puedes mantener el actual <dependency> lombok provided, pero te recomiendo este esquema) -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.32</version>
-            <scope>provided</scope> <!-- si prefieres conservar tu política actual -->
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>RELEASE</version>
-            <scope>compile</scope>
         </dependency>
 
     </dependencies>
@@ -159,6 +132,16 @@
                     <!-- 'release' es preferible a source/target -->
                     <release>${java.version}</release>
                     <encoding>${project.build.sourceEncoding}</encoding>
+                    <!-- Conserva los nombres de parámetros (necesario para @PathVariable/@RequestParam sin nombre) -->
+                    <parameters>true</parameters>
+                    <!-- Procesador de anotaciones de Lombok (versión gestionada por el BOM de Spring Boot) -->
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                     <!-- No incluir -enable-preview -->
                 </configuration>
             </plugin>
