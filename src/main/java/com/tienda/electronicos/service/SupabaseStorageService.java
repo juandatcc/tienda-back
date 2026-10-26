@@ -74,7 +74,7 @@ public class SupabaseStorageService {
         }
 
         // Nombre generado: nunca se usa el nombre original como ruta
-        String ruta = "productos/" + idProducto + "/" + UUID.randomUUID() + "." + extension;
+        String ruta = idProducto + "/" + UUID.randomUUID() + "." + extension;
 
         try {
             HttpRequest request = HttpRequest.newBuilder()
