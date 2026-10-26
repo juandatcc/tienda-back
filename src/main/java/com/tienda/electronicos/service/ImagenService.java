@@ -22,6 +22,9 @@ public class ImagenService {
     /** Mismo tope que el bucket de Supabase (5 MB). */
     public static final long MAX_BYTES = 5L * 1024 * 1024;
 
+    /** Carpeta del bucket donde se guardan las imágenes de producto (productos/<uuid>.<ext>). */
+    static final String CARPETA = "productos";
+
     private final AlmacenImagenes almacen;
 
     /** Tipos admitidos: los mismos del bucket. */
@@ -62,7 +65,7 @@ public class ImagenService {
                     "Formato no permitido: usa JPG, PNG, WEBP o GIF");
         }
 
-        String ruta = UUID.randomUUID() + "." + tipo.extension;
+        String ruta = CARPETA + "/" + UUID.randomUUID() + "." + tipo.extension;
         return almacen.guardar(ruta, tipo.mime, bytes);
     }
 

@@ -56,11 +56,11 @@ class ImagenServiceTest {
     }
 
     @Test
-    void nuncaUsaElNombreOriginalComoRuta() {
+    void guardaEnLaCarpetaProductosYNuncaUsaElNombreOriginal() {
         servicio.subirImagenProducto(archivo("../../etc/passwd.png", "image/png", PNG));
         String ruta = almacen.guardados.get(0)[0];
-        assertFalse(ruta.contains("/") || ruta.contains(".."));
-        assertTrue(ruta.matches("[0-9a-f-]{36}[.]png"));
+        assertFalse(ruta.contains(".."));
+        assertTrue(ruta.matches("productos/[0-9a-f-]{36}[.]png"));
     }
 
     @Test
